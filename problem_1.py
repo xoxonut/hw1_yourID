@@ -51,11 +51,13 @@ def train(O1,O2,s,e):
         mu_x2 = np.linspace(0, 1, O2)
         Mu = np.array(np.meshgrid(mu_x1, mu_x2)).T.reshape(-1, 2)
         Phi = get_gaussian_basis_func(x_train, Mu, sigma_values)
+        Phi = np.column_stack([np.ones(x_train.shape[0]), Phi])
         w = MLE(Phi, y_train)
         pred_train = predict(Phi, w)
         print("train MSE: ", MSE(y_train, pred_train))
     
         Phi = get_gaussian_basis_func(x_val, Mu, sigma_values)
+        Phi = np.column_stack([np.ones(x_val.shape[0]), Phi])
         pred_val = predict(Phi, w)
         tmp = MSE(y_val, pred_val)
         print("val MSE: ", tmp)
@@ -72,6 +74,7 @@ def test(w,O1,O2,s,e,path):
     mu_x2 = np.linspace(0, 1, O2)
     Mu = np.array(np.meshgrid(mu_x1, mu_x2)).T.reshape(-1, 2)
     Phi = get_gaussian_basis_func(x_test, Mu, sigma_values)
+    Phi = np.column_stack([np.ones(x_test.shape[0]), Phi])
     pred_test = predict(Phi, w)
     print("test MSE: ", MSE(y_test, pred_test))
     plot_3d(x_test, y_test, "outputs/3d_scatter.png")
@@ -94,7 +97,7 @@ def save_result(preds: np.ndarray, weights: np.ndarray):
 
 def main(O1,O2,s,e):
     w = train(O1,O2,s,e)
-    pred_test = test(w,O1,O2,s,e,"TEST_PATH")
+    pred_test = test(w,O1,O2,s,e,TEST_PATH)
     save_result(pred_test, w)
 if __name__ == "__main__":
-    main(33,36,0.05,0.27)
+    main(30,35,0.05,0.27)
